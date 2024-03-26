@@ -1,26 +1,31 @@
-import { Router } from "express";
-import { TodosController } from "./controller";
+import { Router } from 'express';
+import { TodosController } from './controller';
+import { TodoDatasourceImpl } from '../../infrastructure/datasource/todo.datasource.impl';
+import { TodoRepositoryImpl } from '../../infrastructure/repositories/todo.repository.impl';
+
 
 export class TodoRoutes {
+
+
+  static get routes(): Router {
+
+    const router = Router();
+
+    const datasource = new TodoDatasourceImpl();
+    const todoRepository = new TodoRepositoryImpl( datasource );
+    const todoController = new TodosController(todoRepository);
+
+    router.get('/', todoController.getTodos );
+    router.get('/:id', todoController.getTodoById );
     
-    static get routes(): Router{ //este es un getter con el get
+    router.post('/', todoController.createTodo );
+    router.put('/:id', todoController.updateTodo );
+    router.delete('/:id', todoController.deleteTodo );
 
-        const router = Router();
-        const todoController = new TodosController();
-        
-        //Routes
-        /**Se pasa solo la referencia de la funcion,
-         * no se llama a la funcion
-         */
-        router.get( '/', todoController.getTodos); 
-        //esto signifca que la ruta va a recibir un para
-        //metro llamado id:
-        router.get( '/:id', todoController.getTodosById);
-        router.post( '/', todoController.createTodo);
-        router.put( '/:id', todoController.updateTodo);
-        router.delete( '/:id', todoController.deleteTodo);
 
-        return router;
-    }
+    return router;
+  }
+
 
 }
+

@@ -1,4 +1,5 @@
 import express, { Router } from 'express';
+import compression from 'compression';
 import path from 'path';
 
 interface Options {
@@ -10,7 +11,8 @@ interface Options {
 
 export class Server {
 
-  private app = express();
+  public readonly app = express();
+  private serverListener?: any;
   private readonly port: number;
   private readonly publicPath: string;
   private readonly routes: Router;
@@ -28,29 +30,33 @@ export class Server {
     
 
     //* Middlewares
-    //Cualquier peticion pasa por los middlewares
-    this.app.use( express.json() ); //esto serializa el body como json: middleware para raw
-    this.app.use( express.urlencoded( {extended: true} ) ); //recibe tambien x-www-form-urlencoded
-
+    this.app.use( express.json() ); // raw
+    this.app.use( express.urlencoded({ extended: true }) ); // x-www-form-urlencoded
+    this.app.use( compression() )
 
     //* Public Folder
     this.app.use( express.static( this.publicPath ) );
 
-    //Routes
+
+    //* Routes
     this.app.use( this.routes );
 
 
-    //SPA
+    //* SPA
     this.app.get('*', (req, res) => {
       const indexPath = path.join( __dirname + `../../../${ this.publicPath }/index.html` );
       res.sendFile(indexPath);
     });
     
 
-    this.app.listen(this.port, () => {
+    this.serverListener = this.app.listen(this.port, () => {
       console.log(`Server running on port ${ this.port }`);
     });
 
+  }
+
+  public close() {
+    this.serverListener?.close();
   }
 
 }

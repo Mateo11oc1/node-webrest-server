@@ -3,7 +3,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-1.1.x"]
 }
 
 datasource db {
@@ -11,9 +10,8 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
-
 model todo {
-  id Int @id @default(autoincrement())
-  text String @db.VarChar
+  id          Int       @id @default(autoincrement())
+  text        String    @db.VarChar
   completedAt DateTime? @db.Timestamp()
 }
