@@ -3,7 +3,3 @@
 node_modules/
 keys/
 .env
-
-/postgres
-
-dist/
